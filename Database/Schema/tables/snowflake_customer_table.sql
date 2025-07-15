@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS gold_schema.customer (
+CREATE TABLE IF NOT EXISTS customer (
     customer_id INT AUTOINCREMENT,
     first_name STRING,
     last_name STRING,

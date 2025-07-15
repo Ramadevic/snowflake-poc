@@ -19,6 +19,7 @@ jobs:
           cli-version: '3.6.0'
 
       - name: Run SQL using Snowflake CLI with temporary connection
+  
         env:
           ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}          
           USER: ${{ secrets.SNOWSQL_USER }}                

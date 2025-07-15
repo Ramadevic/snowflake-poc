@@ -26,4 +26,5 @@ jobs:
           REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         run: |
           snow sql -f deploy-dev.sql
+
                      

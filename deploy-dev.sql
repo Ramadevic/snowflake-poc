@@ -39,3 +39,4 @@ jobs:
             --schema COMMON \
             --filename deploy-dev.sql \
             --debug
+

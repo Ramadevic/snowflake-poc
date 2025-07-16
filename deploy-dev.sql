@@ -3,7 +3,7 @@ name: Deploy to Snowflake
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
@@ -18,14 +18,15 @@ jobs:
         with:
           cli-version: '3.6.0'
 
-      - name: Run SQL using Snowflake CLI with temporary connection
-  
+      - name: Run SQL using Snowflake CLI with connection flags
         env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}          
-          USER: ${{ secrets.SNOWSQL_USER }}                
-          PASSWORD: ${{ secrets.SNOWSQL_PWD }}              
+          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
+          USER: ${{ secrets.SNOWSQL_USER }}
+          PASSWORD: ${{ secrets.SNOWSQL_PWD }}
           REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         run: |
-          snow sql -f deploy-dev.sql
-
-                     
+          snow sql \
+            -a $ACCOUNT \
+            -u $USER \
+            -p $PASSWORD \
+            -f deploy-dev.sql

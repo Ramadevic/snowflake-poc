@@ -29,6 +29,7 @@ jobs:
           echo "🔧 Using ACCOUNT=$ACCOUNT, USER=$USER, ROLE=$ROLE"
           
           snow sql \
+            --temporary-connection \
             --config-file /dev/null \  # Prevent default config fallback
             --account "$ACCOUNT" \
             --user "$USER" \

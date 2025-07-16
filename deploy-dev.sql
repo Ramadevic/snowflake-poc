@@ -18,26 +18,16 @@ jobs:
         with:
           cli-version: '3.6.0'  # You can switch to '3.5.0' if needed
 
-      - name: Run SQL using Snowflake CLI with full connection flags
-        env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
-          USER: ${{ secrets.SNOWSQL_USER }}
-          PASSWORD: ${{ secrets.SNOWSQL_PWD }}
-          ROLE: ${{ secrets.SNOWSQL_ROLE }}
-          REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+      - name: Run SQL using Snowflake CLI with direct connection flags
         run: |
-          echo "🔧 Using ACCOUNT=$ACCOUNT, USER=$USER, ROLE=$ROLE"
-          
+          echo "📡 Connecting to Snowflake..."
           snow sql \
-            --temporary-connection \
-            --config-file /dev/null \  # Prevent default config fallback
-            --account "$ACCOUNT" \
-            --user "$USER" \
-            --password "$PASSWORD" \
-            --role "$ROLE" \
+            --account "${{ secrets.SNOWSQL_ACCOUNT }}" \
+            --user "${{ secrets.SNOWSQL_USER }}" \
+            --password "${{ secrets.SNOWSQL_PWD }}" \
+            --role "${{ secrets.SNOWSQL_ROLE }}" \
             --warehouse DEVOPS_WH \
             --database DEVOPS_DB \
             --schema COMMON \
             --filename deploy-dev.sql \
             --debug
-

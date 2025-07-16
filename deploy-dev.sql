@@ -18,15 +18,14 @@ jobs:
         with:
           cli-version: '3.6.0'
 
-      - name: Run SQL using Snowflake CLI with secrets
-        env:
+      - name: Run SQL using Snowflake CLI with connection flags
+         env:
           ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
           USER: ${{ secrets.SNOWSQL_USER }}
           PASSWORD: ${{ secrets.SNOWSQL_PWD }}
           ROLE: ${{ secrets.SNOWSQL_ROLE }}
           REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         run: |
-          echo "Connecting with ACCOUNT=$ACCOUNT, USER=$USER, ROLE=$ROLE"
           snow sql \
             -a "$ACCOUNT" \
             -u "$USER" \

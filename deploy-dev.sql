@@ -18,17 +18,21 @@ jobs:
         with:
           cli-version: '3.6.0'
 
-      - name: Run SQL using Snowflake CLI with connection flags
-         env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
-          USER: ${{ secrets.SNOWSQL_USER }}
-          PASSWORD: ${{ secrets.SNOWSQL_PWD }}
-          ROLE: ${{ secrets.SNOWSQL_ROLE }}
+      - name: Run SQL using Snowflake CLI with temporary connection
+        env:
+          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}          
+          USER: ${{ secrets.SNOWSQL_USER }}                
+          PASSWORD: ${{ secrets.SNOWSQL_PWD }}              
           REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         run: |
           snow sql \
-            -a "$ACCOUNT" \
-            -u "$USER" \
-            -p "$PASSWORD" \
-            -r "$ROLE" \
-            -f deploy-dev.sql
+            --temporary-connection \
+            --account $ACCOUNT \
+            --user $USER \
+            --password $PASSWORD \
+            --role ACCOUNTADMIN \
+            --warehouse DEVOPS_WH \
+            --database DEVOPS_DB \
+            --schema COMMON \
+            --filename snowflake-deploy.sql \
+            --debug 

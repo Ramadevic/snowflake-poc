@@ -18,26 +18,22 @@ jobs:
         with:
           cli-version: '3.5.0'
 
-      - name: Configure SnowSQL and Run SQL
+      - name: Run SQL on Snowflake (Direct Connection)
         env:
           ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
           USER: ${{ secrets.SNOWSQL_USER }}
           PASSWORD: ${{ secrets.SNOWSQL_PWD }}
           ROLE: ${{ secrets.SNOWSQL_ROLE }}
         run: |
-          echo "🔧 Creating SnowSQL config..."
-          mkdir -p ~/.snowsql
+          echo "✅ Running SQL directly without config..."
 
-          cat <<EOF > ~/.snowsql/config
-[connections.default]
-accountname = $ACCOUNT
-username = $USER
-password = $PASSWORD
-rolename = $ROLE
-warehousename = DEVOPS_WH
-dbname = DEVOPS_DB
-schemaname = COMMON
-EOF
-
-          echo "✅ Config created. Running SQL script..."
-          snow sql --filename deploy-dev.sql --debug
+          snow sql \
+            --accountname $ACCOUNT \
+            --username $USER \
+            --password $PASSWORD \
+            --rolename $ROLE \
+            --warehousename DEVOPS_WH \
+            --dbname DEVOPS_DB \
+            --schemaname COMMON \
+            --filename deploy-dev.sql \
+            --debug

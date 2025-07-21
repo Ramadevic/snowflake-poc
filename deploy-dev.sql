@@ -16,9 +16,9 @@ jobs:
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v1.5
         with:
-          cli-version: '3.5.0' # 3.6.0 has known issues
+          cli-version: '3.5.0'
 
-      - name: Deploy SQL to Snowflake
+      - name: Configure SnowSQL and Run SQL
         env:
           ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
           USER: ${{ secrets.SNOWSQL_USER }}
@@ -26,8 +26,8 @@ jobs:
           ROLE: ${{ secrets.SNOWSQL_ROLE }}
         run: |
           echo "🔧 Creating SnowSQL config..."
-
           mkdir -p ~/.snowsql
+
           cat <<EOF > ~/.snowsql/config
 [connections.default]
 accountname = $ACCOUNT

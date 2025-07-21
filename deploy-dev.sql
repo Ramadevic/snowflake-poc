@@ -16,7 +16,7 @@ jobs:
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v1.5
         with:
-          cli-version: '3.5.0'
+          cli-version: '3.5.0'  # 3.6.0 has issues with connections
 
       - name: Run SQL on Snowflake (Direct Connection)
         env:

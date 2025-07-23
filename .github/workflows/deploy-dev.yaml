@@ -19,7 +19,8 @@ jobs:
 
       - name: Run SQL on Snowflake
         env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
+          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }} # e.g., xy12345.ap-southeast-1
+          HOST: ${{ secrets.SNOWSQL_HOST }} # e.g., xy12345.ap-southeast-1.snowflakecomputing.com
           USER: ${{ secrets.SNOWSQL_USER }}
           PASSWORD: ${{ secrets.SNOWSQL_PWD }}
           ROLE: ${{ secrets.SNOWSQL_ROLE }}
@@ -27,6 +28,7 @@ jobs:
           echo "Adding temp connection..."
           snow connection add \
             --connection-name dev_conn \
+            --host $HOST \
             --accountname $ACCOUNT \
             --username $USER \
             --password $PASSWORD \
@@ -35,8 +37,8 @@ jobs:
             --database DEVOPS_DB \
             --schema COMMON
 
-          echo " Running SQL..."
+          echo "Running SQL..."
           snow sql -c dev_conn -f sql/deploy-dev.sql
 
-          echo " Cleaning up..."
-          snow connection remove --connection dev_conn
+          echo "Cleaning up..."
+          snow connection remove --connection-name dev_conn

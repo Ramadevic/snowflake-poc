@@ -19,13 +19,24 @@ jobs:
 
       - name: Run SQL on Snowflake
         env:
-          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
-          SNOWFLAKE_USER: ${{ secrets.SNOWSQL_USER }}
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWSQL_PWD }}
-          SNOWFLAKE_ROLE: ${{ secrets.SNOWSQL_ROLE }}
-          SNOWFLAKE_WAREHOUSE: DEVOPS_WH
-          SNOWFLAKE_DATABASE: DEVOPS_DB
-          SNOWFLAKE_SCHEMA: COMMON
+          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
+          USER: ${{ secrets.SNOWSQL_USER }}
+          PASSWORD: ${{ secrets.SNOWSQL_PWD }}
+          ROLE: ${{ secrets.SNOWSQL_ROLE }}
         run: |
-          echo " Running DEV SQL via env vars..."
-          snow sql -f sql/deploy-dev.sql
+          echo "Adding temp connection..."
+          snow connection add dev_conn \
+            --account $ACCOUNT \
+            --user $USER \
+            --password $PASSWORD \
+            --role $ROLE \
+            --warehouse DEVOPS_WH \
+            --database DEVOPS_DB \
+            --schema COMMON \
+            --no-prompt
+
+          echo " Running SQL..."
+          snow sql -c dev_conn -f sql/deploy-dev.sql
+
+          echo "Removing temp connection..."
+          snow connection remove dev_conn

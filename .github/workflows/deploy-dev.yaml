@@ -26,7 +26,7 @@ jobs:
         run: |
           echo "Adding temp connection..."
           snow connection add \
-            --connection dev_conn \
+            --connection-name dev_conn \
             --accountname $ACCOUNT \
             --username $USER \
             --password $PASSWORD \

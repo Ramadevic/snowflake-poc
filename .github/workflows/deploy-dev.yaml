@@ -24,13 +24,18 @@ jobs:
           PASSWORD: ${{ secrets.SNOWSQL_PWD }}
           ROLE: ${{ secrets.SNOWSQL_ROLE }}
         run: |
-          echo "Running SQL directly..."
-          snow sql \
-            --account $ACCOUNT \
-            --user $USER \
+          echo "Adding temp connection..."
+          snow connection add dev_conn \
+            --accountname $ACCOUNT \
+            --username $USER \
             --password $PASSWORD \
-            --role $ROLE \
-            --warehouse DEVOPS_WH \
-            --database DEVOPS_DB \
-            --schema COMMON \
-            -f sql/deploy-dev.sql
+            --rolename $ROLE \
+            --warehousename DEVOPS_WH \
+            --dbname DEVOPS_DB \
+            --schemaname COMMON
+
+          echo " Running SQL..."
+          snow sql -c dev_conn -f sql/deploy-dev.sql
+
+          echo " Cleaning up..."
+          snow connection remove dev_conn

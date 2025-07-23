@@ -19,24 +19,23 @@ jobs:
 
       - name: Run SQL on Snowflake
         env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
+          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }} # e.g., xy12345.ap-southeast-1
           USER: ${{ secrets.SNOWSQL_USER }}
           PASSWORD: ${{ secrets.SNOWSQL_PWD }}
           ROLE: ${{ secrets.SNOWSQL_ROLE }}
         run: |
-          echo "Adding temp connection..."
+          echo "Adding temp connection (CLI v3.x syntax)..."
           snow connection add dev_conn \
             --account $ACCOUNT \
             --user $USER \
-            --password $PASSWORD \
+            --password-env PASSWORD \
             --role $ROLE \
             --warehouse DEVOPS_WH \
             --database DEVOPS_DB \
-            --schema COMMON \
-            --no-prompt
+            --schema COMMON
 
-          echo " Running SQL..."
+          echo "Running SQL..."
           snow sql -c dev_conn -f sql/deploy-dev.sql
 
-          echo "Removing temp connection..."
+          echo " Cleaning up..."
           snow connection remove dev_conn

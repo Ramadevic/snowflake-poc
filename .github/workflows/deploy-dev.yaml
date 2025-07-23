@@ -30,7 +30,7 @@ jobs:
             --username $USER \
             --password $PASSWORD \
             --rolename $ROLE \
-            --warehousename DEVOPS_WH \
+            --warehouse DEVOPS_WH \
             --dbname DEVOPS_DB \
             --schemaname COMMON \
             --filename sql/deploy-dev.sql \

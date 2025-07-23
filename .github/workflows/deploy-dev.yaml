@@ -10,17 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Checkout your repository
+      # ✅ Step 1: Checkout your repository code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # ✅ Install Snowflake CLI version 2.8.2
+      # ✅ Step 2: Install Snowflake CLI version 2.8.2
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v1.5
         with:
           cli-version: '2.8.2'
 
-      # ✅ Run the deployment SQL script on Snowflake
+      # ✅ Step 3: Run SQL deployment using environment authentication
       - name: Execute SQL on Snowflake
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
@@ -32,6 +32,9 @@ jobs:
           SNOWFLAKE_SCHEMA: COMMON
           SNOWFLAKE_HOST: ${{ secrets.SNOWSQL_HOST }}
         run: |
+          echo "🔐 Exporting Snowflake password to environment..."
+          export SNOWFLAKE_PASSWORD="${SNOWFLAKE_PASSWORD}"
+
           echo "🔗 Creating temporary Snowflake connection..."
           snow connection add \
             --connection-name temp_conn \
@@ -44,10 +47,10 @@ jobs:
             --schema $SNOWFLAKE_SCHEMA \
             --host $SNOWFLAKE_HOST
 
-          echo "📄 Running SQL script..."
+          echo "📄 Executing SQL script..."
           snow sql \
             --connection temp_conn \
             --filename sql/deploy-dev.sql
 
-          echo "🧹 Cleaning up connection..."
+          echo "🧹 Removing temporary connection..."
           snow connection remove --connection-name temp_conn

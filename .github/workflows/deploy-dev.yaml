@@ -47,3 +47,4 @@ jobs:
           
           echo "Cleaning up connection..."
           snow connection remove --connection-name temp_conn
+          

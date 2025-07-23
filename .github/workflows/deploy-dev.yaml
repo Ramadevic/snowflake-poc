@@ -1,0 +1,49 @@
+name: Deploy to Snowflake (DEV)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Snowflake CLI (v2.8.2 stable)
+        uses: snowflakedb/snowflake-cli-action@v1.5
+        with:
+          cli-version: '2.8.2'
+
+      - name: Run SQL on Snowflake
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWSQL_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWSQL_PWD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWSQL_ROLE }}
+          SNOWFLAKE_WAREHOUSE: DEVOPS_WH
+          SNOWFLAKE_DATABASE: DEVOPS_DB
+          SNOWFLAKE_SCHEMA: COMMON
+          SNOWFLAKE_HOST: ${{ secrets.SNOWSQL_HOST }} # Add this line
+        run: |
+          echo "Creating temporary connection..."
+          snow connection add \
+            --connection-name temp_conn \
+            --account $SNOWFLAKE_ACCOUNT \
+            --user $SNOWFLAKE_USER \
+            --password $SNOWFLAKE_PASSWORD \
+            --role $SNOWFLAKE_ROLE \
+            --warehouse $SNOWFLAKE_WAREHOUSE \
+            --database $SNOWFLAKE_DATABASE \
+            --schema $SNOWFLAKE_SCHEMA \
+            --host $SNOWFLAKE_HOST # Use the host environment variable
+          
+          echo "Running SQL..."
+          snow sql \
+            --connection temp_conn \
+            --filename sql/deploy-dev.sql
+          
+          echo "Cleaning up connection..."
+          snow connection remove --connection-name temp_conn

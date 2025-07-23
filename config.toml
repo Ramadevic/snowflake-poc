@@ -1,0 +1,11 @@
+default_connection_name = "temporary-connection"
+
+[connections]
+[connections.temporary-connection]
+account = ""
+user = ""
+password = ""
+role = ""
+warehouse = ""
+database = ""
+schema = ""

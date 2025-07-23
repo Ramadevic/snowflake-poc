@@ -3,7 +3,7 @@ name: Deploy to Snowflake
 on:
   push:
     branches:
-      - main
+      - main 
 
 jobs:
   deploy:
@@ -16,24 +16,14 @@ jobs:
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v1.5
         with:
-          cli-version: '3.5.0'  # 3.6.0 has issues with connections
+          cli-version: '3.6.0'
 
-      - name: Run SQL on Snowflake (Direct Connection)
+      - name: Run SQL using Snowflake CLI with temporary connection
+  
         env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
-          USER: ${{ secrets.SNOWSQL_USER }}
-          PASSWORD: ${{ secrets.SNOWSQL_PWD }}
-          ROLE: ${{ secrets.SNOWSQL_ROLE }}
+          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}          
+          USER: ${{ secrets.SNOWSQL_USER }}                
+          PASSWORD: ${{ secrets.SNOWSQL_PWD }}              
+          REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         run: |
-          echo "✅ Running SQL directly without config..."
-
-          snow sql \
-            --accountname $ACCOUNT \
-            --username $USER \
-            --password $PASSWORD \
-            --rolename $ROLE \
-            --warehousename DEVOPS_WH \
-            --dbname DEVOPS_DB \
-            --schemaname COMMON \
-            --filename deploy-dev.sql \
-            --debug
+          snow sql -f deploy-dev.sql

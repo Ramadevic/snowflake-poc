@@ -12,10 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install Snowflake CLI (v2.3.2 stable)
+      - name: Install Snowflake CLI (v2.8.2 stable)
         uses: snowflakedb/snowflake-cli-action@v1.5
         with:
-          cli-version: '2.3.2'
+          cli-version: '2.8.2'
 
       - name: Run SQL on Snowflake
         env:

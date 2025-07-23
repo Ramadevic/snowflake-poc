@@ -19,18 +19,13 @@ jobs:
 
       - name: Run SQL on Snowflake
         env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }} # Example: xy12345.ap-southeast-1
-          USER: ${{ secrets.SNOWSQL_USER }}
-          PASSWORD: ${{ secrets.SNOWSQL_PWD }}
-          ROLE: ${{ secrets.SNOWSQL_ROLE }}
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWSQL_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWSQL_PWD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWSQL_ROLE }}
+          SNOWFLAKE_WAREHOUSE: DEVOPS_WH
+          SNOWFLAKE_DATABASE: DEVOPS_DB
+          SNOWFLAKE_SCHEMA: COMMON
         run: |
-          echo " Running DEV SQL..."
-          snow sql \
-            --account $ACCOUNT \
-            --user $USER \
-            --password $PASSWORD \
-            --role $ROLE \
-            --warehouse DEVOPS_WH \
-            --database DEVOPS_DB \
-            --schema COMMON \
-            --filename sql/deploy-dev.sql
+          echo " Running DEV SQL via env vars..."
+          snow sql -f sql/deploy-dev.sql

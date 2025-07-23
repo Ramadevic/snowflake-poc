@@ -24,17 +24,17 @@ jobs:
           PASSWORD: ${{ secrets.SNOWSQL_PWD }}
           ROLE: ${{ secrets.SNOWSQL_ROLE }}
         run: |
-          echo "Adding temp connection (CLI v3.x syntax)..."
+          echo "Adding temp connection..."
           snow connection add dev_conn \
             --account $ACCOUNT \
             --user $USER \
-            --password-env PASSWORD \
+            --password $PASSWORD \
             --role $ROLE \
             --warehouse DEVOPS_WH \
             --database DEVOPS_DB \
             --schema COMMON
 
-          echo "Running SQL..."
+          echo " Running SQL..."
           snow sql -c dev_conn -f sql/deploy-dev.sql
 
           echo " Cleaning up..."

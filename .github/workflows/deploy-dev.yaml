@@ -25,12 +25,12 @@ jobs:
           persist-credentials: false
 
       - name: Install Snowflake CLI
-        uses: Snowflake-Labs/snowflake-cli-action@v1.5
+        uses: Snowflake-Labs/snowflake-cli-action@v1.4
         with:
           cli-version: "latest"
-          default-config-file-path: ".snowflake/config.toml" # optional but recommended :contentReference[oaicite:1]{index=1}
+          default-config-file-path: ".snowflake/config.toml"
 
-      - name: Test connection
+      - name: Verify CLI installation
         run: |
           snow --version
           snow connection test

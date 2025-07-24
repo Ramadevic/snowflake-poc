@@ -22,6 +22,7 @@ CREATE OR REPLACE TABLE customer (
   email STRING UNIQUE,
   date_of_birth DATE,
   created_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+  active BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (id)
 )
 COMMENT = 'Stores customer information';

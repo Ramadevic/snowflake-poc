@@ -1,56 +1,46 @@
-name: Deploy to Snowflake (DEV)
+name: Deploy to Snowflake
 
 on:
   push:
     branches:
-      - main
+      - main  
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      SNOWSQL_ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
+      SNOWSQL_USER: ${{ secrets.SNOWSQL_USER }}
+      SNOWSQL_PASSWORD: ${{ secrets.SNOWSQL_PASSWORD }}
+      SNOWSQL_ROLE: ${{ secrets.SNOWSQL_ROLE }}
+      SNOWSQL_WAREHOUSE: ${{ secrets.SNOWSQL_WAREHOUSE }}
+      SNOWSQL_DATABASE: ${{ secrets.SNOWSQL_DATABASE }}
+      SNOWSQL_SCHEMA: ${{ secrets.SNOWSQL_SCHEMA }}
+
     steps:
-      # ✅ Step 1: Checkout your repository code
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # ✅ Step 2: Install Snowflake CLI version 2.8.2
-      - name: Install Snowflake CLI
-        uses: snowflakedb/snowflake-cli-action@v1.5
-        with:
-          cli-version: '2.8.2'
-
-      # ✅ Step 3: Run SQL deployment using environment authentication
-      - name: Execute SQL on Snowflake
-        env:
-          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}
-          SNOWFLAKE_USER: ${{ secrets.SNOWSQL_USER }}
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWSQL_PWD }}
-          SNOWFLAKE_ROLE: ${{ secrets.SNOWSQL_ROLE }}
-          SNOWFLAKE_WAREHOUSE: DEVOPS_WH
-          SNOWFLAKE_DATABASE: DEVOPS_DB
-          SNOWFLAKE_SCHEMA: COMMON
-          SNOWFLAKE_HOST: ${{ secrets.SNOWSQL_HOST }}
+      - name: Install SnowSQL CLI
         run: |
-          echo "🔐 Exporting Snowflake password to environment..."
-          export SNOWFLAKE_PASSWORD="${SNOWFLAKE_PASSWORD}"
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          curl -O https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
+          bash snowsql-1.2.21-linux_x86_64.bash
 
-          echo "🔗 Creating temporary Snowflake connection..."
-          snow connection add \
-            --connection-name temp_conn \
-            --account $SNOWFLAKE_ACCOUNT \
-            --user $SNOWFLAKE_USER \
-            --authenticator environment \
-            --role $SNOWFLAKE_ROLE \
-            --warehouse $SNOWFLAKE_WAREHOUSE \
-            --database $SNOWFLAKE_DATABASE \
-            --schema $SNOWFLAKE_SCHEMA \
-            --host $SNOWFLAKE_HOST
+      - name: Add SnowSQL to PATH
+        run: |
+          echo "$HOME/.snowsql" >> $GITHUB_PATH
 
-          echo "📄 Executing SQL script..."
-          snow sql \
-            --connection temp_conn \
-            --filename sql/deploy-dev.sql
-
-          echo "🧹 Removing temporary connection..."
-          snow connection remove --connection-name temp_conn
+      - name: Run SQL scripts on Snowflake
+        run: |
+          ~/.snowsql/snowsql \
+            -a "$SNOWSQL_ACCOUNT" \
+            -u "$SNOWSQL_USER" \
+            -r "$SNOWSQL_ROLE" \
+            -w "$SNOWSQL_WAREHOUSE" \
+            -d "$SNOWSQL_DATABASE" \
+            -s "$SNOWSQL_SCHEMA" \
+            -p "$SNOWSQL_PASSWORD" \
+            -f sql/deploy-dev.sql

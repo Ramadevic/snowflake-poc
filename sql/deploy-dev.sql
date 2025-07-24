@@ -30,7 +30,7 @@ COMMENT = 'Stores customer information';
 CREATE OR REPLACE VIEW customer_view AS
   SELECT id, first_name, last_name, email
   FROM customer
-  WHERE active = TRUE;
+  WHERE "active" = TRUE;
 
 -- Create Stored Procedure
 CREATE OR REPLACE PROCEDURE load_customer_data()

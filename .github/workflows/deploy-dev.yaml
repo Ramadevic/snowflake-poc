@@ -2,8 +2,8 @@ name: Deploy to DEV
 
 on:
   push:
-    branches: [main]       # Trigger on pushes to main
-  workflow_dispatch:       # Also allow manual triggering
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -31,15 +31,13 @@ jobs:
           snow --version
           snow connection test \
             --account $SNOWFLAKE_ACCOUNT \
-            --user $SNOWFLAKE_USER \
-            --password $SNOWFLAKE_PASSWORD
+            --user $SNOWFLAKE_USER
 
       - name: Deploy SQL to DEV
         run: |
           snow sql \
             --account $SNOWFLAKE_ACCOUNT \
             --user $SNOWFLAKE_USER \
-            --password $SNOWFLAKE_PASSWORD \
             --role $SNOWFLAKE_ROLE \
             --warehouse $SNOWFLAKE_WAREHOUSE \
             --database $SNOWFLAKE_DATABASE \

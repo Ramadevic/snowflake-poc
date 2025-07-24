@@ -38,5 +38,5 @@ jobs:
             --warehouse $SNOWFLAKE_WAREHOUSE \
             --database $SNOWFLAKE_DATABASE \
             --schema $SNOWFLAKE_SCHEMA \
-            --filename sql/deploy-dev.sql \
+            --filename sql/deploy-uat.sql \
             --debug

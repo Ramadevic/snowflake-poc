@@ -3,7 +3,7 @@ name: Deploy to Snowflake
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
@@ -20,21 +20,23 @@ jobs:
 
       - name: Run SQL using Snowflake CLI with temporary connection
         env:
-          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}          
-          USER: ${{ secrets.SNOWSQL_USER }}                
-          PASSWORD: ${{ secrets.SNOWSQL_PWD }}              
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
           REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         run: |
           snow sql \
             --temporary-connection \
-            --account $ACCOUNT \
-            --user $USER \
-            --password $PASSWORD \
-            --role ACCOUNTADMIN \
-            --warehouse DEVOPS_WH \
-            --database DEVOPS_DB \
-            --schema COMMON \
+            --account $SNOWFLAKE_ACCOUNT \
+            --user $SNOWFLAKE_USER \
+            --password $SNOWFLAKE_PASSWORD \
+            --role $SNOWFLAKE_ROLE \
+            --warehouse $SNOWFLAKE_WAREHOUSE \
+            --database $SNOWFLAKE_DATABASE \
+            --schema $SNOWFLAKE_SCHEMA \
             --filename sql/deploy-dev.sql \
-            --debug 
-            
-            
+            --debug

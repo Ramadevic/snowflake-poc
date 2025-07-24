@@ -1,45 +1,40 @@
-name: Deploy to DEV
+name: Deploy to Snowflake
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches:
+      - main 
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-      SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-      SNOWFLAKE_ROLE: "ACCOUNTADMIN"
-      SNOWFLAKE_WAREHOUSE: "DEVOPS_WH"
-      SNOWFLAKE_DATABASE: "DEVOPS_DB"
-      SNOWFLAKE_SCHEMA: "COMMON"
-
     steps:
-      - name: ✅ Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Install Snowflake CLI via pip
-        run: |
-          python -m pip install --upgrade snowflake-cli
+      - name: Install Snowflake CLI
+        uses: snowflakedb/snowflake-cli-action@v1.5
+        with:
+          cli-version: '3.6.0'
 
-      - name: Verify CLI installation
-        run: |
-          snow --version
-          snow connection test \
-            --account $SNOWFLAKE_ACCOUNT \
-            --user $SNOWFLAKE_USER
-
-      - name: Deploy SQL to DEV
+      - name: Run SQL using Snowflake CLI with temporary connection
+        env:
+          ACCOUNT: ${{ secrets.SNOWSQL_ACCOUNT }}          
+          USER: ${{ secrets.SNOWSQL_USER }}                
+          PASSWORD: ${{ secrets.SNOWSQL_PWD }}              
+          REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         run: |
           snow sql \
-            --account $SNOWFLAKE_ACCOUNT \
-            --user $SNOWFLAKE_USER \
-            --role $SNOWFLAKE_ROLE \
-            --warehouse $SNOWFLAKE_WAREHOUSE \
-            --database $SNOWFLAKE_DATABASE \
-            --schema $SNOWFLAKE_SCHEMA \
-            --file sql/deploy-dev.sql
+            --temporary-connection \
+            --account $ACCOUNT \
+            --user $USER \
+            --password $PASSWORD \
+            --role ACCOUNTADMIN \
+            --warehouse DEVOPS_WH \
+            --database DEVOPS_DB \
+            --schema COMMON \
+            --filename sql/deploy-dev.sql \
+            --debug 
+            
+            

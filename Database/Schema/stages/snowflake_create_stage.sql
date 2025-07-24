@@ -1,4 +1,3 @@
-CREATE STAGE my_stage
-FILE_FORMAT = (TYPE = 'CSV')
-URL = 'gcs://your-gcs-bucket/path/'
-STORAGE_INTEGRATION = my_gcs_integration
+CREATE OR REPLACE STAGE my_stage
+  FILE_FORMAT = (TYPE = CSV FIELD_OPTIONALLY_ENCLOSED_BY = '"')
+  COMMENT = 'Stage for loading customer data';

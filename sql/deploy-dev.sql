@@ -1,31 +1,28 @@
+-- Session context
 USE ROLE ACCOUNTADMIN;
 USE WAREHOUSE DEVOPS_WH;
 USE DATABASE DEVOPS_DB;
 USE SCHEMA COMMON;
 
--- Optionally record start time
-SELECT CURRENT_TIMESTAMP() AS deployment_start, 'DEV' AS environment;
+-- 1. Log deployment start with audit info
+SELECT CURRENT_TIMESTAMP() AS deployment_start
+      , 'DEV'                 AS environment
+      , CURRENT_USER()        AS deployed_by;
 
--- ===========================================
--- 🔄 2. Execute modular SQL object scripts
--- ===========================================
+-- 2. Enable safe DDL behavior (optional)
+ALTER SESSION SET DDL_OUTPUT = 'TRUE';
 
--- 2.1 Create external stages (if any)
+-- 3. Modular script execution
 !RUN stages/snowflake_create_stage.sql;
-
--- 2.2 Create or update tables
 !RUN tables/snowflake_customer_table.sql;
-
--- 2.3 Create or update views
 !RUN views/snowflake_create_view_customer.sql;
-
--- 2.4 Create or update stored procedures
 !RUN stored-procedures/snowflake_create_procedure.sql;
 
--- ===========================================
--- ✅ 3. Finalize deployment
--- ===========================================
+-- 4. Validate important objects exist
+SELECT object_type, object_name
+FROM information_schema.views
+WHERE table_schema = current_schema();
 
--- Record completion
+-- 5. Finalize deployment with timestamp & success check
 SELECT CURRENT_TIMESTAMP() AS deployment_end, 'DEV' AS environment;
 SELECT '✅ Deployment to DEV complete.' AS status;

@@ -10,18 +10,16 @@ SELECT CURRENT_TIMESTAMP() AS deployment_start,
        CURRENT_USER() AS deployed_by;
 
 -- Deploy Stage
-CALL COMMON.DEPLOY_STAGES;
+CALL COMMON.DEPLOY_STAGES();
 
 -- Deploy Table
-CALL COMMON.DEPLOY_TABLES;
+CALL COMMON.DEPLOY_TABLES();
 
 -- Deploy View
-CALL COMMON.DEPLOY_VIEWS;
+CALL COMMON.DEPLOY_VIEWS();
 
 -- Deploy Stored Procedure
-CALL COMMON.DEPLOY_STORED-PROCEDURES;
-
--- Add more calls to deploy other scripts as needed
+CALL COMMON.DEPLOY_STORED_PROCEDURES();
 
 -- Log deployment completion
 SELECT CURRENT_TIMESTAMP() AS deployment_end,

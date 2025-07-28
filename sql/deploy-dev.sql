@@ -1,27 +1,57 @@
--- Set context for development environment
-USE ROLE ACCOUNTADMIN;
-USE WAREHOUSE DEVOPS_WH;
-USE DATABASE DEVOPS_DB;
-USE SCHEMA COMMON;
+-- DEPLOY_STAGES procedure
+CREATE OR REPLACE PROCEDURE COMMON.DEPLOY_STAGES()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+    CREATE OR REPLACE STAGE my_stage
+    FILE_FORMAT = (TYPE = CSV FIELD_OPTIONALLY_ENCLOSED_BY = '"')
+    COMMENT = 'Stage for loading customer data';
+    
+    RETURN 'STAGE created';
+$$;
 
--- Log deployment start
-SELECT CURRENT_TIMESTAMP() AS deployment_start,
-       'DEV' AS environment,
-       CURRENT_USER() AS deployed_by;
+-- DEPLOY_TABLES procedure
+CREATE OR REPLACE PROCEDURE COMMON.DEPLOY_TABLES()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+    CREATE OR REPLACE TABLE customer (
+        id INT AUTOINCREMENT START 1 INCREMENT 1,
+        first_name STRING NOT NULL,
+        last_name STRING NOT NULL,
+        email STRING UNIQUE,
+        date_of_birth DATE,
+        created_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+        active BOOLEAN DEFAULT TRUE,
+        PRIMARY KEY (id)
+    );
 
--- Deploy Stage
-CALL COMMON.DEPLOY_STAGES();
+    RETURN 'TABLE created';
+$$;
 
--- Deploy Table
-CALL COMMON.DEPLOY_TABLES();
+-- DEPLOY_STORED_PROCEDURES procedure
+CREATE OR REPLACE PROCEDURE COMMON.DEPLOY_STORED_PROCEDURES()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+    CREATE OR REPLACE PROCEDURE load_customer_data()
+    RETURNS STRING
+    LANGUAGE JAVASCRIPT
+    EXECUTE AS CALLER
+    AS
+    $$
+        try {
+            var sql_command = "COPY INTO @my_stage FROM 's3://mybucket/customer_data.csv' FILE_FORMAT = (TYPE = CSV)";
+            var statement1 = snowflake.createStatement({ sqlText: sql_command });
+            statement1.execute();
+            return "Data loaded successfully";
+        } catch (err) {
+            return "failed to load data: " + err;
+        }
+    $$;
 
--- Deploy View
-CALL COMMON.DEPLOY_VIEWS();
-
--- Deploy Stored Procedure
-CALL COMMON.DEPLOY_STORED_PROCEDURES();
-
--- Log deployment completion
-SELECT CURRENT_TIMESTAMP() AS deployment_end,
-       'DEV' AS environment,
-       CURRENT_USER() AS deployed_by;
+    RETURN 'PROCEDURE created';
+$$;

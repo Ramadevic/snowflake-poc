@@ -1,14 +1,13 @@
--- DEPLOY_STAGES procedure
 CREATE OR REPLACE PROCEDURE COMMON.DEPLOY_STAGES()
 RETURNS STRING
 LANGUAGE SQL
 AS
 $$
-    CREATE OR REPLACE STAGE my_stage
-    FILE_FORMAT = (TYPE = CSV FIELD_OPTIONALLY_ENCLOSED_BY = '"')
-    COMMENT = 'Stage for loading customer data';
-    
-    RETURN 'STAGE created';
+    BEGIN
+        CREATE OR REPLACE STAGE my_stage
+        FILE_FORMAT = (TYPE = CSV FIELD_OPTIONALLY_ENCLOSED_BY = '"')
+        COMMENT = 'Stage for loading customer data';
+    END;
 $$;
 
 -- DEPLOY_TABLES procedure

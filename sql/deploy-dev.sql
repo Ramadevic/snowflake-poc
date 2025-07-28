@@ -1,20 +1,29 @@
+-- ===============================
+-- DEPLOY_STAGES Procedure
+-- ===============================
 CREATE OR REPLACE PROCEDURE COMMON.DEPLOY_STAGES()
 RETURNS STRING
 LANGUAGE SQL
 AS
 $$
-    BEGIN
-        CREATE OR REPLACE STAGE my_stage
+BEGIN
+    CREATE OR REPLACE STAGE my_stage
         FILE_FORMAT = (TYPE = CSV FIELD_OPTIONALLY_ENCLOSED_BY = '"')
         COMMENT = 'Stage for loading customer data';
-    END;
+
+    RETURN 'Stage created successfully';
+END;
 $$;
 
+-- ===============================
+-- DEPLOY_TABLES Procedure
+-- ===============================
 CREATE OR REPLACE PROCEDURE COMMON.DEPLOY_TABLES()
 RETURNS STRING
 LANGUAGE SQL
 AS
 $$
+BEGIN
     CREATE OR REPLACE TABLE customer (
         id INT AUTOINCREMENT START 1 INCREMENT 1,
         first_name STRING NOT NULL,
@@ -26,29 +35,10 @@ $$
         PRIMARY KEY (id)
     );
 
-    RETURN 'TABLE created';
+    RETURN 'Table created successfully';
+END;
 $$;
 
-CREATE OR REPLACE PROCEDURE COMMON.DEPLOY_STORED_PROCEDURES()
-RETURNS STRING
-LANGUAGE SQL
-AS
-$$
-    CREATE OR REPLACE PROCEDURE load_customer_data()
-    RETURNS STRING
-    LANGUAGE JAVASCRIPT
-    EXECUTE AS CALLER
-    AS
-    $$
-        try {
-            var sql_command = "COPY INTO @my_stage FROM 's3://mybucket/customer_data.csv' FILE_FORMAT = (TYPE = CSV)";
-            var statement1 = snowflake.createStatement({ sqlText: sql_command });
-            statement1.execute();
-            return "Data loaded successfully";
-        } catch (err) {
-            return "failed to load data: " + err;
-        }
-    $$;
-
-    RETURN 'PROCEDURE created';
-$$;
+-- ===============================
+-- DEPLOY_STORED_PROCEDURES Procedure
+-- =================
